@@ -25,7 +25,7 @@ jobs:
             echo 'Private or generated artifact detected.'
             exit 1
           fi
-          if git grep -nEI '/Users/|/var/folders/|AIza[0-9A-Za-z_-]{20,}|gho_[0-9A-Za-z_]+'; then
+          if git grep -nEI '/Users/|/var/folders/|AIza[0-9A-Za-z_-]{20,}|gho_[0-9A-Za-z_]+' -- ':!.github/workflows/ci.yml'; then
             echo 'Potential private path or credential detected.'
             exit 1
           fi
