@@ -21,11 +21,11 @@ jobs:
       - name: Reject common private artifacts
         shell: bash
         run: |
-          if find . -type f \( -name '.env' -o -name '*.csv' -o -name '*.xlsx' -o -name '*.vtt' -o -name '*.pyc' \) -print -quit | grep -q .; then
+          if git ls-files | grep -E '(^|/)\.env($|\.)|\.(csv|xlsx|vtt|pyc)$|(^|/)__pycache__/' ; then
             echo 'Private or generated artifact detected.'
             exit 1
           fi
-          if grep -RIE '/Users/|/var/folders/|AIza[0-9A-Za-z_-]{20,}|gho_[0-9A-Za-z_]+' . --exclude-dir=.git; then
+          if git grep -nEI '/Users/|/var/folders/|AIza[0-9A-Za-z_-]{20,}|gho_[0-9A-Za-z_]+'; then
             echo 'Potential private path or credential detected.'
             exit 1
           fi
