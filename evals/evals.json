@@ -1,0 +1,54 @@
+{
+  "skill_name": "omnichannel-voc-researcher",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Research UTV and ATV cab cooling fans across YouTube, Reddit, Amazon, X, and TikTok. I need product, listing, and content recommendations, with browser-assisted social sampling and no CAPTCHA bypass.",
+      "expected_output": "A study contract, source plan, canonical evidence package, audited coding workflow, source-specific statistics, quality status, and traceable report without a blended cross-platform sentiment rate.",
+      "files": [],
+      "expectations": [
+        "Keeps channel denominators separate",
+        "Uses browser-assisted samples with explicit stop conditions",
+        "Requires deterministic statistics and source IDs",
+        "Marks insufficient evidence partial"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Collect about 100 public records to understand NorthTrail brand reputation. Prefer Chrome-style human browsing; if X is blocked use my authorized paid X API. Include Amazon and Reddit evidence.",
+      "expected_output": "A bounded browser-first source plan, X API fallback with cost manifest, access-mode labels, cleaning and viral-thread caps, annotation audit, and a reputation report with evidence links.",
+      "files": [],
+      "expectations": [
+        "Does not scale browser access into unattended scraping",
+        "Distinguishes verified purchase, owned use, and questions",
+        "Records API fallback and resource use",
+        "Does not expose credentials"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Combine an exported customer-support CSV with competitor Amazon reviews and YouTube comments to identify the top product defects and update our FAQ.",
+      "expected_output": "Privacy-aware first-party import, separate operational and public-source denominators, defect taxonomy, low-rating and service cross-tabs, evidence excerpts, and FAQ recommendations qualified by the quality gate.",
+      "files": [],
+      "expectations": [
+        "Removes direct identifiers from normalized records",
+        "Does not calculate a support rate without an eligible-order denominator",
+        "Uses a calibrated taxonomy and audit",
+        "Makes each recommendation traceable"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Do a deep product-improvement VOC study for a UTV windshield protector. Use YouTube, public UTV forums, Old Reddit, Amazon, X, TikTok, Facebook, and Instagram. YouTube has an API key. Decide the total evidence target and channel allocation before collecting.",
+      "expected_output": "A decision-depth sample plan that makes YouTube, public forums, and Old Reddit the core; uses the YouTube API first for search, metadata, comments, and replies; separates public-caption recovery; assigns small but interpretable floors to high-risk social sources; and gates both record counts and independent parents.",
+      "files": [],
+      "expectations": [
+        "Does not allocate an equal fixed count to every channel",
+        "Uses the YouTube Data API before browser collection for YouTube",
+        "Keeps transcript-video and comment denominators separate",
+        "Requires record and independent-parent floors for core sources",
+        "Treats high-risk social sources below 30 records or 10 parents as case supplements"
+      ]
+    }
+  ]
+}
