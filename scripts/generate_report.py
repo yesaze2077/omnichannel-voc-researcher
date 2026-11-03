@@ -5,10 +5,14 @@ from __future__ import annotations
 
 import argparse
 import html
+import json
 from pathlib import Path
 from typing import Any
 
 from common import normalize_space, read_json, read_jsonl, atomic_write_text
+
+
+from workflow_contract import load_acceptance, delivery_marker
 
 
 def esc(value: Any) -> str:
@@ -76,7 +80,7 @@ def evidence_html(statistics: dict[str, Any], limit: int = 40) -> str:
         tags = ", ".join(item.get("tags", []))
         rows.append(
             "<tr>"
-            f'<td><code>{esc(source_id)}</code></td>'
+            f'<td><code data-source-id="{esc(source_id)}">{esc(source_id)}</code></td>'
             f'<td>{esc(item.get("source"))}</td>'
             f'<td>{esc(item.get("sentiment"))}</td>'
             f'<td>{esc(item.get("severity"))}</td>'
@@ -104,8 +108,17 @@ def main() -> int:
     parser.add_argument("--findings", default="")
     parser.add_argument("--title", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--acceptance", required=True)
+    parser.add_argument("--artifact-kind", choices=("final","snapshot"), default="final")
     args = parser.parse_args()
 
+    try:
+        accepted = load_acceptance(Path(args.acceptance), args.artifact_kind, {key:Path(getattr(args,key)) for key in ('records','annotations','quality_gate','statistics','taxonomy')})
+    except (ValueError,OSError,KeyError) as exc:
+        parser.error(str(exc))
+    marker = delivery_marker(accepted, args.artifact_kind)
+    marker_json = json.dumps(marker).replace('<','\\u003c')
+    delivery_notice = 'PROGRESS SNAPSHOT — task_complete=false; collection and review work may remain.' if args.artifact_kind=='snapshot' else ('COMPLETE — declared channel and audit gates passed.' if accepted['task_complete'] else 'PARTIAL — required coverage shortfalls remain; original task is not complete.')
     records = read_jsonl(Path(args.records))
     annotations = read_jsonl(Path(args.annotations))
     statistics = read_json(Path(args.statistics))
@@ -113,7 +126,9 @@ def main() -> int:
     taxonomy = read_json(Path(args.taxonomy))
     findings = read_json(Path(args.findings)) if args.findings and Path(args.findings).exists() else {}
     denominators = statistics.get("denominators", {})
-    status = quality.get("status", "partial")
+    status = accepted['state']
+    display_title = ('[PROGRESS SNAPSHOT · task_complete=false] ' if args.artifact_kind=='snapshot' else '') + args.title
+    delivery_detail = f"State: {accepted['state']}. Required shortfalls: {', '.join(accepted['required_shortfalls']) or 'none'}. Next action: {accepted['next_action']}."
     decision = findings.get(
         "decision",
         "Deterministic evidence package generated. Decision interpretation requires analyst review.",
@@ -170,8 +185,9 @@ def main() -> int:
 
     report = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{esc(args.title)}</title><style>{css}</style></head><body>
-<header><div class="eyebrow">Omnichannel Voice of Customer</div><h1>{esc(args.title)}</h1>
+<title>{esc(display_title)}</title><style>{css}</style></head><body>
+<script type="application/json" id="delivery-acceptance">{marker_json}</script>
+<header><p data-delivery-notice>{esc(delivery_notice)}</p><div class="eyebrow">Omnichannel Voice of Customer</div><h1>{esc(display_title)}</h1><p data-delivery-state>{esc(delivery_detail)}</p>
 <p class="muted">Source-traceable evidence report. Channel denominators remain separate.</p>
 <span class="status status-{esc(status)}">{esc(status.upper())}</span></header>
 <main>

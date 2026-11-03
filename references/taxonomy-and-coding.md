@@ -15,7 +15,7 @@ Generate level-two concerns and level-three observable expressions from a strati
 
 ## Sample construction
 
-Use about 150 records for a new category, stratified by:
+Use about 150 records for a new category, or all available records when a smaller teaching/pilot sample was declared before collection, stratified by:
 
 - source;
 - brand or product family;
@@ -37,7 +37,7 @@ Before full annotation, inspect every proposed level-three tag for:
 - enough expected support to be useful;
 - relevance to the business decision.
 
-Freeze the accepted taxonomy version. Later changes require a new version and deliberate re-annotation or a documented compatibility map.
+Ask the human reviewer to confirm the proposed labels and retain the actual calibration decision. Pause dependent full annotation while waiting; continue independent collection, cleaning, and provenance checks. A draft classification package is a snapshot, not the completed research deliverable. Freeze the accepted taxonomy version. Later changes require a new version and deliberate re-annotation or a documented compatibility map.
 
 ## Coding rules
 
@@ -55,7 +55,7 @@ Review a sample of excluded records. Common mistakes include excluding short but
 
 ## Annotation audit
 
-Audit `max(50, ceil(5% of included records))`, stratified across source, brand, rating band, sentiment, and high-severity labels. Check:
+Audit `min(N, max(50, ceil(5% of N)))`, where N is the included record count, stratified across source, brand, rating band, sentiment, and high-severity labels. Use all records if N is below 50. Retain actual human-review evidence; an automated review must not be called human audit. Pending audit holds dependent final acceptance only. Check:
 
 1. record relevance;
 2. sentiment;

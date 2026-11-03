@@ -22,6 +22,9 @@ from common import (
 )
 
 
+from workflow_contract import digest
+
+
 ALLOWED_SENTIMENT = {"positive", "neutral", "negative", "mixed"}
 ALLOWED_OWNERSHIP = {
     "verified_purchase",
@@ -201,6 +204,7 @@ def main() -> int:
     write_jsonl(Path(args.audit_sample), audit_sample)
 
     validation = {
+        "input_digests": {"records":digest(records),"annotations":digest(annotations),"taxonomy":digest(taxonomy)},
         "record_count": len(records),
         "annotation_count": len(annotations),
         "labeled_known_records": labeled_known,

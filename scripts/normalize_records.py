@@ -53,6 +53,35 @@ DEFAULT_RECORD_TYPE = {
     "first_party": "customer_record",
 }
 
+# Safe, auditable collection context that may be carried from a source bridge.
+# This is deliberately a whitelist: credentials, raw author names, cookies, and
+# arbitrary source-specific fields are never copied automatically.
+PASSTHROUGH_FIELDS = (
+    "query_id",
+    "round",
+    "dimension",
+    "scope",
+    "authorization_status",
+    "preferred_entrypoint",
+    "fallback_entrypoint",
+    "parent_url",
+    "selection_mode",
+    "product_relation",
+    "evidence_type",
+    "time_bucket",
+    "sample_role",
+    "webpage_url",
+    "subreddit",
+    "comment_depth",
+    "score_text",
+    "visible_comment_nodes",
+    "has_more_comments",
+    "country",
+    "language",
+    "variant",
+    "variant_scope",
+)
+
 
 def parse_field_map(raw: str) -> dict[str, str]:
     if not raw:
@@ -90,7 +119,7 @@ def main() -> int:
     output_path = Path(args.output)
     field_map = parse_field_map(args.field_map)
     source = args.source.lower()
-    collected_at = utc_now()
+    run_collected_at = utc_now()
 
     existing = read_jsonl(output_path) if args.append and output_path.exists() else []
     known_ids = {normalize_space(row.get("source_id")) for row in existing}
@@ -106,7 +135,8 @@ def main() -> int:
         native_id = normalize_space(find_value(raw, "native_id", field_map))
         source_url = normalize_space(find_value(raw, "source_url", field_map))
         published_at = normalize_space(find_value(raw, "published_at", field_map))
-        source_id = safe_source_id(source, native_id, source_url, published_at, text)
+        provided_source_id = normalize_space(raw.get("source_id"))
+        source_id = provided_source_id or safe_source_id(source, native_id, source_url, published_at, text)
         if source_id in known_ids:
             duplicate_ids += 1
             continue
@@ -120,7 +150,7 @@ def main() -> int:
             "parent_id": normalize_space(find_value(raw, "parent_id", field_map)),
             "record_type": normalize_space(find_value(raw, "record_type", field_map)) or DEFAULT_RECORD_TYPE.get(source, "record"),
             "published_at": published_at,
-            "collected_at": collected_at,
+            "collected_at": normalize_space(raw.get("collected_at")) or run_collected_at,
             "text": text,
             "source_url": source_url,
             "author_hash": stable_hash(args.author_salt, source, author) if author else "",
@@ -137,6 +167,10 @@ def main() -> int:
             "collection_status": "collected",
             "exclusion_reason": "",
         }
+        for field in PASSTHROUGH_FIELDS:
+            value = raw.get(field)
+            if value is not None and value != "":
+                record[field] = value
         normalized.append(record)
         known_ids.add(source_id)
 
